@@ -4,6 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Школьные мероприятия</title>
+    <link rel="icon" href="Logo.png" type="image/x-icon">
     <link rel="stylesheet" href="styles.css">
 </head>
 <body>
@@ -55,7 +56,7 @@
                 <!-- Мероприятия будут загружены здесь -->
             </div>
             <div id="admin-controls" style="display: none;">
-                <button onclick="openModal()">Добавить мероприятие</button>
+                <button onclick="addOrEditEvent(event)">Добавить мероприятие</button>
             </div>
         </section>
 
@@ -71,6 +72,16 @@
             </form>
         </section>
 
+        <div id="event-info-modal" class="modal" style="display: none;">
+            <div class="modal-content">
+                <span class="close" onclick="closeEventInfoModal()">&times;</span>
+                <h2 id="event-info-name"></h2>
+                <p id="event-info-date"></p>
+                <p id="event-info-time"></p>
+                <p id="event-info-description"></p>
+            </div>
+        </div>
+        
         <!-- Раздел Вход / Регистрация -->
         <section id="auth" style="display: none;">
             <h2>Вход / Регистрация</h2>
@@ -85,6 +96,18 @@
             <div class="g-signin2" data-onsuccess="onSignIn"></div>
             <p id="auth-message"></p>
         </section>
+
+        <!-- Модальное окно с информацией о мероприятии -->
+            <div id="event-info-modal" class="modal" style="display: none;">
+                <div class="modal-content">
+                    <span class="close" onclick="closeEventInfoModal()">&times;</span>
+                    <h2 id="event-info-name"></h2>
+                    <p id="event-info-date"></p>
+                    <p id="event-info-time"></p>
+                    <p id="event-info-description"></p>
+
+                </div>
+            </div>
 
         <!-- Модальное окно добавления/редактирования мероприятия -->
         <div id="modal" class="modal" style="display: none;">
@@ -104,13 +127,16 @@
                     <label for="event-image">Прикрепить изображение:</label>
                     <input type="file" id="event-image" accept="image/*">
 
+                    <label for="event-description">Описание мероприятия:</label>
+                    <textarea id="event-description" required></textarea>
+
                     <button type="submit">Сохранить</button>
                 </form>
             </div>
         </div>
     </main>
 
-    <footer>
+    <footer class="footer">
         <p>&copy; 2024 Школа. Все права защищены.</p>
     </footer>
 

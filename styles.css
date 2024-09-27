@@ -368,3 +368,19 @@ header {
 h1 {
     margin-left: 120px; /* Оставляем место для видео */
 }
+.footer {
+    position: fixed;
+    bottom: 0;
+    width: 100%;
+    text-align: center;
+    background-color: #f4f4f9; /* или любой другой цвет фона */
+    padding: 10px;
+}
+.event-item {
+    transition: transform 0.3s ease;
+    cursor: pointer;
+}
+
+.event-item:hover {
+    transform: scale(1.05);
+}
