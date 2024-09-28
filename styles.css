@@ -369,18 +369,17 @@ h1 {
     margin-left: 120px; /* Оставляем место для видео */
 }
 .footer {
-    position: fixed;
+    position: fixed; /* Зафиксировано внизу */
     bottom: 0;
+    left: 0;
     width: 100%;
+    background-color: #f1f1f1; /* Цвет фона футера */
     text-align: center;
-    background-color: #f4f4f9; /* или любой другой цвет фона */
-    padding: 10px;
-}
-.event-item {
-    transition: transform 0.3s ease;
-    cursor: pointer;
+    padding: 10px 0;
+    box-shadow: 0 -2px 5px rgba(0, 0, 0, 0.1); /* Тень для эстетики */
+    display: none; /* Скрыть футер по умолчанию */
 }
 
-.event-item:hover {
-    transform: scale(1.05);
+.footer.visible {
+    display: block; /* Показать футер, когда это необходимо */
 }

@@ -1,12 +1,12 @@
-const adminEmail = "ilyaparf2021@gmail.com"; // Укажите email администратора
-const adminPassword = "i2l0y1a0"; // Укажите пароль администратора
+const adminEmail = "ilyaparf2021@gmail.com"; // Email администратора
+const adminPassword = "i2l0y1a0"; // Пароль администратора
 
 const events = JSON.parse(localStorage.getItem('events')) || [];
 let users = JSON.parse(localStorage.getItem('users')) || [];
-let isAdmin = false;
 let loggedInUser = JSON.parse(localStorage.getItem('loggedInUser')) || null;
-let deleteEventIndex = null; // Индекс мероприятия для удаления
-let editEventIndex = null;   // Индекс мероприятия для редактирования
+let isAdmin = false;
+let deleteEventIndex = null;
+let editEventIndex = null;
 
 // Сохраняем мероприятия в локальное хранилище
 function saveEvents() {
@@ -27,7 +27,8 @@ function loadEvents() {
                         <h4>${event.name}</h4>
                         <p>Дата: ${event.date} Время: ${event.time}</p>
                     </div>
-                    ${isAdmin ? `<div class="event-actions">
+                    ${isAdmin ? `
+                    <div class="event-actions">
                         <button onclick="openConfirmModal(${index}); event.stopPropagation();">Удалить</button>
                         <button onclick="openEditModal(${index}); event.stopPropagation();">Редактировать</button>
                     </div>` : ''}
@@ -38,21 +39,29 @@ function loadEvents() {
 }
 
 // Открытие модального окна для редактирования мероприятия
-function openEditModal(index) {
-    editEventIndex = index; // Устанавливаем индекс редактируемого мероприятия
-    const event = events[index];
+function openEditModal(index = null) {
+    editEventIndex = index;
+    const modalTitle = document.querySelector("#modal h2");
 
-    // Заполняем форму данными мероприятия
-    document.getElementById("event-name").value = event.name;
-    document.getElementById("event-date").value = event.date;
-    document.getElementById("event-time").value = event.time;
-    document.getElementById("event-description").value = event.description;
+    if (index !== null) {
+        const event = events[index];
+        document.getElementById("event-name").value = event.name;
+        document.getElementById("event-date").value = event.date;
+        document.getElementById("event-time").value = event.time;
+        document.getElementById("event-description").value = event.description;
+        modalTitle.textContent = "Редактировать мероприятие";
+    } else {
+        document.getElementById("event-name").value = '';
+        document.getElementById("event-date").value = '';
+        document.getElementById("event-time").value = '';
+        document.getElementById("event-description").value = '';
+        modalTitle.textContent = "Добавить мероприятие";
+    }
 
-    // Открываем модальное окно
     document.getElementById("modal").style.display = "block";
 }
 
-// Функция для добавления или редактирования мероприятия
+// Добавление или редактирование мероприятия
 function addOrEditEvent(event) {
     event.preventDefault();
     const eventName = document.getElementById("event-name").value.trim();
@@ -75,26 +84,26 @@ function addOrEditEvent(event) {
     }
 }
 
-// Сохраняем новое или редактируемое мероприятие
+// Сохранение нового или редактируемого мероприятия
 function saveNewEvent(name, date, time, description, image) {
     if (editEventIndex !== null) {
-        events[editEventIndex] = { name, date, time, description, image }; // Обновляем существующее мероприятие
-        editEventIndex = null; // Сбрасываем индекс после редактирования
+        events[editEventIndex] = { name, date, time, description, image }; // Обновление мероприятия
+        editEventIndex = null; // Сброс индекса редактирования
     } else {
-        events.push({ name, date, time, description, image }); // Добавляем новое мероприятие
+        events.push({ name, date, time, description, image }); // Добавление нового мероприятия
     }
     saveEvents();
     loadEvents();
-    closeModal(); // Закрываем модальное окно после сохранения
+    closeModal();
 }
 
-// Открываем модальное окно для подтверждения удаления
+// Открытие модального окна для подтверждения удаления
 function openConfirmModal(index) {
     deleteEventIndex = index;
     document.getElementById("confirm-modal").style.display = "block";
 }
 
-// Закрываем модальное окно подтверждения удаления
+// Закрытие модального окна подтверждения удаления
 function closeConfirmModal() {
     deleteEventIndex = null;
     document.getElementById("confirm-modal").style.display = "none";
@@ -110,17 +119,17 @@ document.getElementById("confirm-delete-button").onclick = function() {
 
 // Удаление мероприятия
 function deleteEvent(index) {
-    events.splice(index, 1); // Удаляем мероприятие по индексу
-    saveEvents(); // Сохраняем изменения
-    loadEvents(); // Обновляем список мероприятий
+    events.splice(index, 1); // Удаление мероприятия
+    saveEvents(); // Сохранение изменений
+    loadEvents(); // Обновление списка мероприятий
 }
 
-// Закрываем модальное окно мероприятия
+// Закрытие модального окна
 function closeModal() {
     document.getElementById("modal").style.display = "none";
 }
 
-// Открываем модальное окно информации о мероприятии
+// Открытие модального окна с информацией о мероприятии
 function openEventInfoModal(index) {
     const event = events[index];
     document.getElementById("event-info-name").textContent = event.name;
@@ -130,27 +139,77 @@ function openEventInfoModal(index) {
     document.getElementById("event-info-modal").style.display = "block";
 }
 
-// Закрываем модальное окно с информацией о мероприятии
+// Закрытие модального окна с информацией о мероприятии
 function closeEventInfoModal() {
     document.getElementById("event-info-modal").style.display = "none";
 }
 
-// Загрузка информации о текущем пользователе
+// Обработка входа
+document.getElementById("auth-form").onsubmit = function(event) {
+    event.preventDefault();
+    const email = document.getElementById("email").value.trim();
+    const password = document.getElementById("password").value.trim();
+
+    if (email === adminEmail && password === adminPassword) {
+        loggedInUser = { email: adminEmail, isAdmin: true };
+        localStorage.setItem('loggedInUser', JSON.stringify(loggedInUser));
+        alert("Вы вошли как администратор.");
+    } else {
+        const user = users.find(u => u.email === email && u.password === password);
+        if (user) {
+            loggedInUser = { email: user.email, isAdmin: false };
+            localStorage.setItem('loggedInUser', JSON.stringify(loggedInUser));
+            alert("Вы вошли как пользователь.");
+        } else {
+            alert("Неверный email или пароль.");
+        }
+    }
+    loadUser(); // Обновляем информацию о пользователе
+};
+
+// Регистрация нового пользователя
+document.getElementById("register-button").onclick = function() {
+    const email = document.getElementById("email").value.trim();
+    const password = document.getElementById("password").value.trim();
+
+    if (!email || !password) {
+        alert("Введите email и пароль.");
+        return;
+    }
+
+    const userExists = users.some(u => u.email === email);
+    if (userExists) {
+        alert("Пользователь с таким email уже зарегистрирован.");
+    } else {
+        users.push({ email, password });
+        localStorage.setItem('users', JSON.stringify(users));
+        alert("Регистрация прошла успешно.");
+    }
+};
+
+// Загрузка информации о пользователе
 function loadUser() {
     if (loggedInUser) {
         document.getElementById("user-email").textContent = `Привет, ${loggedInUser.email}!`;
         document.getElementById("user-info").style.display = "block";
         isAdmin = loggedInUser.isAdmin;
         document.getElementById("admin-controls").style.display = isAdmin ? "block" : "none";
-        loadEvents(); // Загружаем мероприятия с учетом прав администратора
+        loadEvents();
     } else {
         document.getElementById("user-info").style.display = "none";
         isAdmin = false;
         document.getElementById("admin-controls").style.display = "none";
-        loadEvents(); // Обновляем мероприятия при выходе
+        loadEvents();
     }
 }
 
+// Выход из системы
+function logout() {
+    loggedInUser = null;
+    localStorage.removeItem('loggedInUser');
+    loadUser();
+}
+
 // Инициализация страницы
-loadUser(); // Загружаем информацию о пользователе при загрузке страницы
-loadEvents(); // Загружаем мероприятия
+loadUser();
+loadEvents();
